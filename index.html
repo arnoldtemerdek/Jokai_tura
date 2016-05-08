@@ -31,7 +31,13 @@
         <div id="map">
         </div>
         <script src="data/json_Jokaiturautvonal0.js"></script>
+        <script src="data/json_Ellenorzopontok1.js"></script>
         <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
         L.ImageOverlay.include({
             getBounds: function () {
                 return this._bounds;
@@ -39,7 +45,7 @@
         });
         var map = L.map('map', {
             zoomControl:true, maxZoom:28, minZoom:1
-        }).fitBounds([[46.2958978507,23.0474962836],[46.8116763353,24.440996009]]);
+        }).fitBounds([[46.3312412798,22.990873021],[46.8466853496,24.3843727464]]);
         var hash = new L.Hash(map);
         map.attributionControl.addAttribution('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a>');
         var feature_group = new L.featureGroup([]);
@@ -87,6 +93,34 @@
         layerOrder[layerOrder.length] = json_Jokaiturautvonal0JSON;
         bounds_group.addLayer(json_Jokaiturautvonal0JSON);
         feature_group.addLayer(json_Jokaiturautvonal0JSON);
+        function pop_Ellenorzopontok1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table><tr><th scope="row"></th><td>' + (feature.properties['Nev'] !== null ? Autolinker.link(String(feature.properties['Nev'])) : '') + '</td></tr></table>';
+            layer.bindPopup(popupContent);
+        }
+
+        function doPointToLayerEllenorzopontok1(feature, latlng) {
+            return L.marker(latlng)
+        }
+        var json_Ellenorzopontok1JSON = new L.geoJson(json_Ellenorzopontok1, {
+            onEachFeature: pop_Ellenorzopontok1, 
+            pointToLayer: doPointToLayerEllenorzopontok1
+            });
+        layerOrder[layerOrder.length] = json_Ellenorzopontok1JSON;
+
+        bounds_group.addLayer(json_Ellenorzopontok1JSON);
+        feature_group.addLayer(json_Ellenorzopontok1JSON);
         raster_group.addTo(map);
         feature_group.addTo(map);
         L.control.scale({options: {position: 'bottomleft', maxWidth: 100, metric: true, imperial: false, updateWhenIdle: false}}).addTo(map);
